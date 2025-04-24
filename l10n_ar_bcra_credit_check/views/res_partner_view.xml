@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_res_partner_form_bcra" model="ir.ui.view">
+        <field name="name">res.partner.form.bcra</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Informe BCRA">
+                    <div class="o_horizontal_separator" />
+                    
+                    <!-- Botón de acción y campos sin títulos -->
+                    <button name="consultar_estado_crediticio_bcra"
+                            type="object"
+                            string="Consultar Informe BCRA"
+                            class="oe_highlight"/>
+                    
+                    <!-- Agregamos el espacio en blanco aquí -->
+                    <div style="margin-bottom: 10px;"></div>
+                    
+                    <div class="o_field_value text-left">
+                        <div><field name="bcra_credit_status" readonly="1" /></div>
+                        <div><field name="bcra_last_update" readonly="1" /></div>
+                        <div><field name="bcra_credit_detail" readonly="1" /></div>
+                        <div><field name="bcra_rejected_checks" readonly="1" /></div>
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
