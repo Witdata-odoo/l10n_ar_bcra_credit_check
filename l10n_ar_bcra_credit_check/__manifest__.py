@@ -4,9 +4,11 @@
     'category': 'Accounting',
     'summary': 'Consulta el estado crediticio, historial y cheques rechazados del cliente en el BCRA',
     'author': 'Horacio Montaño',
-    'depends': ['base'],
+    'depends': ['base', 'account'],
     'data': [
         'views/res_partner_view.xml',
+        'views/account_payment_bcra.xml',
+        'data/bcra_cron.xml'
     ],
     'installable': True,
     'application': False,

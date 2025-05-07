@@ -12,6 +12,13 @@ class ResPartner(models.Model):
     bcra_last_update = fields.Date("Última Actualización BCRA", readonly=True)
     bcra_credit_detail = fields.Text("Detalle del Estado Crediticio", readonly=True)
     bcra_rejected_checks = fields.Text("Cheques Rechazados", readonly=True)
+    bcra_rejected_checks_status = fields.Char(
+    string="Cheques Rechazados",
+    compute="_compute_bcra_rejected_checks_status",
+    store=False,
+)
+
+    
 
     def consultar_estado_crediticio_bcra(self):
         for partner in self:
@@ -106,3 +113,11 @@ class ResPartner(models.Model):
                     "bcra_credit_detail": "",
                     "bcra_rejected_checks": "",
                 })
+
+    @api.depends("bcra_rejected_checks")
+    def _compute_bcra_rejected_checks_status(self):
+        for partner in self:
+            if partner.bcra_rejected_checks and "Sin cheques rechazados" not in partner.bcra_rejected_checks and "No disponible" not in partner.bcra_rejected_checks:
+                partner.bcra_rejected_checks_status = "Sí"
+            else:
+                partner.bcra_rejected_checks_status = "No"
