@@ -1,10 +1,10 @@
 {
     'name': 'BCRA Credit Check',
-    'version': '18.0',
+    'version': '19.0.1.1.0',
     'category': 'Accounting',
     'summary': 'Consulta el estado crediticio, historial y cheques rechazados del cliente en el BCRA',
     'author': 'Horacio Montaño, Francisco Sulé',
-    'depends': ['base', 'account'],
+    'depends': ['account','contacts'],
     'data': [
         'views/res_partner_view.xml',
         'views/account_payment_bcra.xml',
