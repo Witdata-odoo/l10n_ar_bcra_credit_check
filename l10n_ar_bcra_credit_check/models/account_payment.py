@@ -29,7 +29,17 @@ Situación 5 - Irrecuperable: Deudas impagas con más de 365 días de atraso."""
     @api.onchange('partner_id')
     def _onchange_partner_id_bcra(self):
         if self.partner_id:
-            try:
-                self.partner_id.consultar_estado_crediticio_bcra()
-            except Exception as e:
-                _logger.error("Error consultando BCRA en onchange para %s: %s", self.partner_id.name, str(e))
+            
+            if self.partner_id.country_id and self.partner_id.country_id.code == "AR":
+                try:
+                    self.partner_id.consultar_estado_crediticio_bcra()
+                except Exception as e:
+                    _logger.error(
+                        "Error consultando BCRA en onchange para %s: %s",
+                        self.partner_id.name, str(e)
+                    )
+            else:
+                _logger.info(
+                    "No se consulta BCRA en el pago: partner %s no es de Argentina",
+                    self.partner_id.name,
+                )

@@ -22,6 +22,18 @@ class ResPartner(models.Model):
 
     def consultar_estado_crediticio_bcra(self):
         for partner in self:
+            
+            if not partner.country_id or partner.country_id.code != "AR":
+                _logger.info(
+                    "Salteando consulta BCRA para %s: país distinto de AR",
+                    partner.name,
+                )
+                partner.update({
+                    "bcra_credit_status": "Disponible solo para clientes de Argentina",
+                    "bcra_credit_detail": "",
+                    "bcra_rejected_checks": "",
+                })
+                continue
             # Validación del CUIT/CUIL
             if not partner.vat or len(partner.vat) != 11:
                 _logger.warning("El cliente no tiene un CUIT/CUIL válido registrado.")
