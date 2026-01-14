@@ -3,8 +3,9 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-class AccountPayment(models.Model):
-    _inherit = "account.payment"
+
+class AccountPaymentGroup(models.Model):
+    _inherit = "account.payment.group"
 
     country_code = fields.Char(
         string="Country Code",

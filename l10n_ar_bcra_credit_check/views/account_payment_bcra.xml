@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_account_payment_form_bcra_inherit" model="ir.ui.view">
-        <field name="name">account.payment.form.bcra.inherit</field>
-        <field name="model">account.payment</field>
-        <field name="inherit_id" ref="account.view_account_payment_form"/>
+    <record id="view_account_payment_group_form_bcra_inherit" model="ir.ui.view">
+        <field name="name">account.payment.group.form.bcra.inherit</field>
+        <field name="model">account.payment.group</field>
+        <field name="inherit_id" ref="account_payment_group.view_account_payment_group_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='partner_id']" position="before">
+            <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="country_code" invisible="1"/>
                 <field name="bcra_credit_status_info" attrs="{'invisible': [('country_code', '!=', 'AR')]}"/>
                 <field name="bcra_rejected_checks_status" attrs="{'invisible': [('country_code', '!=', 'AR')]}"/>

@@ -5,7 +5,7 @@
     'images': ['static/description/main_screenshot.png'],
     'summary': 'Consulta el estado crediticio, historial y cheques rechazados del cliente en el BCRA',
     'author': 'Horacio Montaño, Francisco Sulé',
-    'depends': ['base', 'account'],
+    'depends': ['base', 'account', 'account_payment_group'],
     'data': [
         'views/res_partner_view.xml',
         'views/account_payment_bcra.xml',
