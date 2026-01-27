@@ -3,8 +3,16 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-class AccountPayment(models.Model):
-    _inherit = "account.payment"
+
+class AccountPaymentGroup(models.Model):
+    _inherit = "account.payment.group"
+
+    country_code = fields.Char(
+        string="Country Code",
+        related="partner_id.country_id.code",
+        store=False,
+        readonly=True,
+    )
 
     bcra_credit_status_info = fields.Char(
         string="Situación Crediticia BCRA",
@@ -29,7 +37,6 @@ Situación 5 - Irrecuperable: Deudas impagas con más de 365 días de atraso."""
     @api.onchange('partner_id')
     def _onchange_partner_id_bcra(self):
         if self.partner_id:
-            
             if self.partner_id.country_id and self.partner_id.country_id.code == "AR":
                 try:
                     self.partner_id.consultar_estado_crediticio_bcra()
