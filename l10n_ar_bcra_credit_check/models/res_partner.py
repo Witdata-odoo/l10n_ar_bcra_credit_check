@@ -7,19 +7,22 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def _bcra_get(url, timeout=15, retries=3, backoff=1.5):
+def _bcra_get(url, timeout=15, retries=6, sleep_between=1.0):
     """GET a la API del BCRA con retry.
 
-    La API tira RemoteDisconnected/ConnectionError intermitente (1er request
-    falla, 2do anda). Reintentamos hasta `retries` veces con backoff.
-    Excepción: HTTP 404 es válido (sin datos) → devolvemos la response sin
-    reintentar.
+    La API del BCRA tira RemoteDisconnected/ConnectionError de forma
+    intermitente: un mismo CUIT puede dar 404 en un intento y FAIL en el
+    siguiente. Es un problema del LB del BCRA (sockets corrompidos en
+    algunos backends). Reintentamos forzando conexión nueva con
+    `Connection: close` para evitar reusar sockets que el server ya cerró.
+
+    HTTP 404 es respuesta VÁLIDA del BCRA ("sin datos"); no reintentar.
     """
     last_exc = None
+    headers = {"Connection": "close", "Accept": "application/json"}
     for attempt in range(retries):
         try:
-            r = requests.get(url, timeout=timeout, verify=False)
-            # 404 es respuesta válida del BCRA, no reintentar
+            r = requests.get(url, timeout=timeout, verify=False, headers=headers)
             if r.status_code == 404:
                 return r
             r.raise_for_status()
@@ -31,12 +34,11 @@ def _bcra_get(url, timeout=15, retries=3, backoff=1.5):
                 url, attempt + 1, retries, type(e).__name__,
             )
             if attempt < retries - 1:
-                time.sleep(backoff * (attempt + 1))
+                time.sleep(sleep_between)
         except requests.exceptions.HTTPError as e:
-            # Si el error HTTP es 5xx, vale la pena reintentar
             if r.status_code >= 500 and attempt < retries - 1:
                 last_exc = e
-                time.sleep(backoff * (attempt + 1))
+                time.sleep(sleep_between)
                 continue
             raise
     if last_exc:
@@ -193,7 +195,7 @@ class ResPartner(models.Model):
                 rejected_checks = "Timeout consultando cheques rechazados"
                 _logger.warning("Timeout consultando cheques BCRA para %s", partner.vat)
             except requests.exceptions.RequestException as e:
-                rejected_checks = "Error consultando cheques rechazados"
+                rejected_checks = "API BCRA intermitente — reintentar más tarde"
                 _logger.warning("Error consultando cheques BCRA para %s: %s", partner.vat, e)
             except Exception:
                 rejected_checks = "Error inesperado consultando cheques"
